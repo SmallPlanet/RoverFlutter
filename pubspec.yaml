@@ -1,0 +1,31 @@
+name: rover_flutter
+description: "Flutter plugin for the Rover data collection platform"
+version: 0.0.1
+homepage: https://github.com/SmallPlanet/RoverFlutter
+
+environment:
+  sdk: ^3.6.1
+  flutter: '>=3.3.0'
+
+dependencies:
+  flutter:
+    sdk: flutter
+  plugin_platform_interface: ^2.0.2
+  uuid: ^4.0.0
+
+dev_dependencies:
+  flutter_test:
+    sdk: flutter
+  flutter_lints: ^5.0.0
+
+flutter:
+  plugin:
+    platforms:
+      android:
+        package: com.smallplanet.rover_flutter
+        pluginClass: RoverFlutterPlugin
+      ios:
+        pluginClass: RoverFlutterPlugin
+      macos:
+        pluginClass: RoverFlutterPlugin
+

@@ -135,4 +135,4 @@ TBD
 
 
 
-Latest version: v0.0.1
+Latest version: v0.0.2

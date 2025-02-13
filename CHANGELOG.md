@@ -1,3 +1,11 @@
+## 0.0.4
+
+* Continue refinement of the build pipeline
+
+## 0.0.3
+
+* Continue refinement of the build pipeline
+
 ## 0.0.2
 
 * Continue refinement of the build pipeline

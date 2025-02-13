@@ -139,4 +139,4 @@ dependencies:
 
 
 
-Latest version: v0.0.3
+Latest version: v0.0.4

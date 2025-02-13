@@ -42,14 +42,15 @@ public class RoverFlutterPlugin: NSObject, FlutterPlugin {
     }
     
     func remove(delegateUUID: String) {
-       delegates[delegateUUID] = nil
-   }
+        delegates[delegateUUID] = nil
+    }
     
     public func send(_ delegateUUID: String,
                      _ argsJson: String,
                      _ returnCallback: @escaping ResponseBlock) {
-        waitingForResponseFromDelegate[delegateUUID] = returnCallback
-        channel.invokeMethod("callDelegate", arguments: ["delegateUUID": delegateUUID, "argsJson": argsJson])
+        let hookUUID = UUID().uuidString
+        waitingForResponseFromDelegate[hookUUID] = returnCallback
+        channel.invokeMethod("callDelegate", arguments: ["hookUUID": hookUUID, "delegateUUID": delegateUUID, "argsJson": argsJson])
     }
     
     public func handle(_ call: FlutterMethodCall,
@@ -85,6 +86,7 @@ public class RoverFlutterPlugin: NSObject, FlutterPlugin {
     func sendResult(_ call: FlutterMethodCall,
                     result: @escaping FlutterResult) {
         struct Args: Codable {
+            var hookUUID: String
             var delegateUUID: String
             var resultJson: String?
             var resultError: String?
@@ -96,10 +98,10 @@ public class RoverFlutterPlugin: NSObject, FlutterPlugin {
             return rerror(result, argsJson.decodedError(Args.self))
         }
         
-        guard let pendingResult = waitingForResponseFromDelegate[args.delegateUUID] else {
-            return
+        guard let pendingResult = waitingForResponseFromDelegate[args.hookUUID] else {
+            return rerror(result, "hookUUID \(args.hookUUID) does not exist")
         }
-        waitingForResponseFromDelegate[args.delegateUUID] = nil
+        waitingForResponseFromDelegate[args.hookUUID] = nil
 
         pendingResult(args.resultJson, args.resultError)
 

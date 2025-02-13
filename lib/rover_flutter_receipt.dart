@@ -52,7 +52,8 @@ class ConnectionStruct {
       account: json['account'],
       password: json['password'],
       cookiesBase64: json['cookiesBase64'],
-      fromDate: DateTime.parse(json['fromDate']),
+      fromDate:
+          json['fromDate'] != null ? DateTime.parse(json['fromDate']) : null,
       appInfo: json['appInfo'],
       featureFlags: List<String>.from(json['featureFlags']),
       userInteractionRequired: json['userInteractionRequired'],

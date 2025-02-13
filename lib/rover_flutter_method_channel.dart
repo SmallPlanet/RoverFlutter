@@ -18,6 +18,11 @@ class MethodChannelRoverFlutter extends RoverFlutterPlatform {
         String argsJson = call.arguments["argsJson"];
         Map<String, dynamic> args = jsonDecode(argsJson);
 
+        String? hookUUID = call.arguments["hookUUID"];
+        if (hookUUID == null) {
+          throw StateError('hookUUID $hookUUID does not exist');
+        }
+
         String delegateUUID = args["delegateUUID"];
         String delegateFunc = args["delegateFunc"];
 
@@ -32,21 +37,21 @@ class MethodChannelRoverFlutter extends RoverFlutterPlatform {
               delegate.roverDidFinish(args["sessionUUID"], args["error"],
                   args["userError"], args["verboseError"]);
               RoverFlutterPlatform.instance
-                  .sendResult(delegate.uuid, null, null);
+                  .sendResult(hookUUID, delegate.uuid, null, null);
               delegates.remove(delegateUUID);
               break;
             case "roverDidInit":
               delegate.roverDidInit(args["sessionUUID"], args["scrapeRequest"],
                   (scrapeRequest, error) {
                 RoverFlutterPlatform.instance.sendResult(
-                    delegate.uuid, jsonEncode(scrapeRequest), error);
+                    hookUUID, delegate.uuid, jsonEncode(scrapeRequest), error);
               });
               break;
             case "roverDidCollect":
               delegate.roverDidCollect(
                   args["sessionUUID"], args["receipts"].cast<ReceiptStruct>());
               RoverFlutterPlatform.instance
-                  .sendResult(delegate.uuid, null, null);
+                  .sendResult(hookUUID, delegate.uuid, null, null);
               break;
             case "roverHasStatus":
               delegate.roverHasStatus(
@@ -59,7 +64,7 @@ class MethodChannelRoverFlutter extends RoverFlutterPlatform {
                   args["tagLog"].cast<String>(),
                   args["userTag"]);
               RoverFlutterPlatform.instance
-                  .sendResult(delegate.uuid, null, null);
+                  .sendResult(hookUUID, delegate.uuid, null, null);
               break;
             case "roverAccountDidLogin":
               delegate.roverAccountDidLogin(
@@ -69,7 +74,7 @@ class MethodChannelRoverFlutter extends RoverFlutterPlatform {
                   args["password"],
                   args["cookiesBase64"], (error, appInfo) {
                 RoverFlutterPlatform.instance
-                    .sendResult(delegate.uuid, appInfo, error);
+                    .sendResult(hookUUID, delegate.uuid, appInfo, error);
               });
               break;
           }
@@ -82,11 +87,12 @@ class MethodChannelRoverFlutter extends RoverFlutterPlatform {
   }
 
   @override
-  Future<void> sendResult(
-      String delegateUUID, String? argsJson, String? error) async {
+  Future<void> sendResult(String hookUUID, String delegateUUID,
+      String? argsJson, String? error) async {
     await methodChannel.invokeMethod<String>(
         'sendResult',
         jsonEncode({
+          "hookUUID": hookUUID,
           "delegateUUID": delegateUUID,
           "argsJson": argsJson,
           "error": error

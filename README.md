@@ -91,32 +91,28 @@ rover.remove(account: connection.account, merchantId: connection.merchantId);
 In your Android project, please add the following overrides to a custom subclass of Application.
 
 ```kotlin
-import com.rover.RoverModule
+import com.smallplanet.rover_flutter.RoverFlutterPlugin
+import io.flutter.app.FlutterApplication
 
 // Create a custom subclass of Application and provide the following overrides
-class ReferenceApplication(): Application() {
-	override fun getPackageName(): String? {
-		return RoverModule.getPackageName() ?: super.getPackageName()
-	}
-	
-	override fun getPackageManager(): PackageManager {
-		return RoverModule.getPackageManager(
-			super.getPackageName(),
-			super.getPackageManager()
-		) ?: super.getPackageManager()
-	}
-}
-```
-In your project ```build.gradle``` file, add the following repository:
-```
-allprojects {
-    repositories {
-        flatDir { dirs "$rootDir/../node_modules/react-native-rover/android/libs" }
+class MyApplication(): FlutterApplication() {
+    override fun getPackageName(): String? {
+        return RoverFlutterPlugin.getPackageName() ?: super.getPackageName()
+    }
+
+    override fun getPackageManager(): PackageManager {
+        return RoverFlutterPlugin.getPackageManager(
+            super.getPackageName(),
+            super.getPackageManager()
+        ) ?: super.getPackageManager()
     }
 }
+
+// In your AndroidManifest.xml:
+// <application android:name=".MyApplication"
 ```
 
-## Proguard
+### Proguard
 
 If your Android app has proguard enabled, please add the following rules:
 
@@ -125,14 +121,22 @@ If your Android app has proguard enabled, please add the following rules:
 -keep class com.rover.** { *; }
 ```
 
+## macOS
+
+Ensure your application has **Outgoing Connections** enabled in **Signing & Capabilities** section in Xcode.
+
 ## SDK Integration
 
-To use Rover in your Flutter application:
+To use Rover in your Flutter application add the following dependency to your pubspec.yaml:
 
 ```sh
-TBD
+dependencies:
+  rover_flutter:
+    git:
+      url: https://github.com/SmallPlanet/RoverFlutter.git
+      ref: main
 ```
 
 
 
-Latest version: v0.0.2
+Latest version: v0.0.3

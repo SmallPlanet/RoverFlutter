@@ -19,7 +19,7 @@ abstract class RoverFlutterPlatform extends PlatformInterface {
   }
 
   Future<void> sendResult(
-      String delegateUUID, String? argsJson, String? error) {
+      String hookUUID, String delegateUUID, String? argsJson, String? error) {
     throw UnimplementedError('to be implemented');
   }
 

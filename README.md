@@ -86,6 +86,18 @@ rover.remove(account: connection.account, merchantId: connection.merchantId);
 
 ```
 
+## iOS
+
+RoveriOS supports iOS 13.4 and above; you may need to set this in your ios/Podfile:
+
+```
+platform :ios, '13.4'
+```
+
+## macOS
+
+Ensure your application has **Outgoing Connections** enabled in **Signing & Capabilities** section in Xcode.
+
 ## Android
 
 In your Android project, please add the following overrides to a custom subclass of Application.
@@ -112,6 +124,14 @@ class MyApplication(): FlutterApplication() {
 // <application android:name=".MyApplication"
 ```
 
+### FlutterFragmentActivity
+
+Rover requires the use of Fragments; ensure that the Activity you are using with Rover is a subclass of FlutterFragmentActivity
+
+```
+class MainActivity: FlutterFragmentActivity()
+```
+
 ### Proguard
 
 If your Android app has proguard enabled, please add the following rules:
@@ -121,22 +141,26 @@ If your Android app has proguard enabled, please add the following rules:
 -keep class com.rover.** { *; }
 ```
 
-## macOS
-
-Ensure your application has **Outgoing Connections** enabled in **Signing & Capabilities** section in Xcode.
-
 ## SDK Integration
 
 To use Rover in your Flutter application add the following dependency to your pubspec.yaml:
 
 ```sh
+# To reference the latest Rover Flutter
 dependencies:
   rover_flutter:
     git:
       url: https://github.com/SmallPlanet/RoverFlutter.git
       ref: main
+
+# To reference a specific version of Rover Flutter
+dependencies:
+  rover_flutter:
+    git:
+      url: https://github.com/SmallPlanet/RoverFlutter.git
+      ref: v0.0.4
 ```
 
 
 
-Latest version: v0.0.4
+Latest version: v0.0.5

@@ -1,3 +1,7 @@
+## 0.0.5
+
+* Updated readme
+
 ## 0.0.4
 
 * Continue refinement of the build pipeline

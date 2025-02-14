@@ -96,6 +96,12 @@ platform :ios, '13.4'
 
 ## macOS
 
+RoveriOS supports macOS 12.0 and above; you may need to set this in your macos/Podfile:
+
+```
+platform :osx, '12.0'
+```
+
 Ensure your application has **Outgoing Connections** enabled in **Signing & Capabilities** section in Xcode.
 
 ## Android
@@ -163,4 +169,4 @@ dependencies:
 
 
 
-Latest version: v0.0.5
+Latest version: v0.0.6

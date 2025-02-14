@@ -49,7 +49,10 @@ class MethodChannelRoverFlutter extends RoverFlutterPlatform {
               break;
             case "roverDidCollect":
               delegate.roverDidCollect(
-                  args["sessionUUID"], args["receipts"].cast<ReceiptStruct>());
+                  args["sessionUUID"],
+                  (args["receipts"] as List<dynamic>)
+                      .map((v) => ReceiptStruct.fromJson(v))
+                      .toList());
               RoverFlutterPlatform.instance
                   .sendResult(hookUUID, delegate.uuid, null, null);
               break;
@@ -133,7 +136,7 @@ class MethodChannelRoverFlutter extends RoverFlutterPlatform {
     if (value == null) {
       throw StateError('configure returned null');
     }
-    return (jsonDecode(value) as List)
+    return (jsonDecode(value) as List<dynamic>)
         .map((merchant) => MerchantStruct.fromJson(merchant))
         .toList();
   }
@@ -175,7 +178,7 @@ class MethodChannelRoverFlutter extends RoverFlutterPlatform {
     if (value == null) {
       throw StateError('connections returned null');
     }
-    return (jsonDecode(value) as List)
+    return (jsonDecode(value) as List<dynamic>)
         .map((connection) => ConnectionStruct.fromJson(connection))
         .toList();
   }

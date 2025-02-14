@@ -53,9 +53,11 @@ class ConnectionStruct {
       password: json['password'],
       cookiesBase64: json['cookiesBase64'],
       fromDate:
-          json['fromDate'] != null ? DateTime.parse(json['fromDate']) : null,
+          json['fromDate'] == null ? null : DateTime.parse(json['fromDate']),
       appInfo: json['appInfo'],
-      featureFlags: List<String>.from(json['featureFlags']),
+      featureFlags: json['featureFlags'] == null
+          ? null
+          : List<String>.from(json['featureFlags']),
       userInteractionRequired: json['userInteractionRequired'],
     );
   }
@@ -274,8 +276,12 @@ class ReceiptItemStruct {
     return ReceiptItemStruct(
       titleOriginal: json['titleOriginal'],
       title: json['title'],
-      titleOther: List<String>.from(json['titleOther']),
-      titleAuthors: List<String>.from(json['titleAuthors']),
+      titleOther: json['titleOther'] == null
+          ? null
+          : List<String>.from(json['titleOther']),
+      titleAuthors: json['titleAuthors'] == null
+          ? null
+          : List<String>.from(json['titleAuthors']),
       quantity: json['quantity'],
       weight: json['weight'],
       asin: json['asin'],
@@ -490,7 +496,11 @@ class ReceiptStruct {
       membershipInfo: json['membershipInfo'],
       orderUrl: json['orderUrl'],
       additionalOrderUrl: json['additionalOrderUrl'],
-      fees: json['fees'],
+      fees: json['fees'] == null
+          ? null
+          : (json['fees'] as List<dynamic>)
+              .map((v) => ReceiptFeeStruct.fromJson(v))
+              .toList(),
       tax: json['tax'],
       total: json['total'],
       totalWithoutTax: json['totalWithoutTax'],
@@ -501,17 +511,27 @@ class ReceiptStruct {
       currency: json['currency'],
       paymentMethod: json['paymentMethod'],
       paymentChannel: json['paymentChannel'],
-      shippingAddress: json['shippingAddress'],
-      merchantAddress: json['merchantAddress'],
-      billingAddress: json['billingAddress'],
-      items: json['items'],
+      shippingAddress: json['shippingAddress'] == null
+          ? null
+          : ReceiptAddressStruct.fromJson(json['shippingAddress']),
+      merchantAddress: json['merchantAddress'] == null
+          ? null
+          : ReceiptAddressStruct.fromJson(json['merchantAddress']),
+      billingAddress: json['billingAddress'] == null
+          ? null
+          : ReceiptAddressStruct.fromJson(json['billingAddress']),
+      items: (json['items'] as List<dynamic>)
+          .map((v) => ReceiptItemStruct.fromJson(v))
+          .toList(),
       sourceData: json['sourceData'],
       clientInfo: json['clientInfo'],
       auxData: json['auxData'],
       merchantLocalPurchaseDate: json['merchantLocalPurchaseDate'],
       emlOriginatingDate: json['emlOriginatingDate'],
       emlOriginatingDateMerchantLocal: json['emlOriginatingDateMerchantLocal'],
-      emlSubjectKeywords: List<String>.from(json['emlSubjectKeywords']),
+      emlSubjectKeywords: json['emlSubjectKeywords'] == null
+          ? null
+          : List<String>.from(json['emlSubjectKeywords']),
       cancelled: json['cancelled'],
       preorder: json['preorder'],
       returned: json['returned'],

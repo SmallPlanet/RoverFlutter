@@ -1,3 +1,7 @@
+## 0.0.7
+
+* Json serialization fixes
+
 ## 0.0.6
 
 * Updated readme

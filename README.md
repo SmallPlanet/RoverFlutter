@@ -169,4 +169,4 @@ dependencies:
 
 
 
-Latest version: v0.0.7
+Latest version: v0.0.8

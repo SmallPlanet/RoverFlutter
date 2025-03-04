@@ -1,3 +1,7 @@
+## 0.0.8
+
+* RoveriOS v0.4.10 / RoverAndroid v0.4.7
+
 ## 0.0.7
 
 * Json serialization fixes

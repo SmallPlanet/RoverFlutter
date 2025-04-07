@@ -114,6 +114,88 @@ class MerchantStruct {
 // MARK: - ScrapeStatus
 // MARK: ScrapeRequest
 // MARK: - Receipt
+class ReceiptFlightStruct {
+  String? number;
+  String? departureName;
+  String? departureCode;
+  String? arrivalName;
+  String? arrivalCode;
+  String? departureDate;
+  String? arrivalDate;
+
+  ReceiptFlightStruct({
+    this.number,
+    this.departureName,
+    this.departureCode,
+    this.arrivalName,
+    this.arrivalCode,
+    this.departureDate,
+    this.arrivalDate,
+  });
+
+  Map<String, dynamic> toJson() {
+    return {
+      'number': number,
+      'departureName': departureName,
+      'departureCode': departureCode,
+      'arrivalName': arrivalName,
+      'arrivalCode': arrivalCode,
+      'departureDate': departureDate,
+      'arrivalDate': arrivalDate,
+    };
+  }
+
+  factory ReceiptFlightStruct.fromJson(Map<String, dynamic> json) {
+    return ReceiptFlightStruct(
+      number: json['number'],
+      departureName: json['departureName'],
+      departureCode: json['departureCode'],
+      arrivalName: json['arrivalName'],
+      arrivalCode: json['arrivalCode'],
+      departureDate: json['departureDate'],
+      arrivalDate: json['arrivalDate'],
+    );
+  }
+}
+
+class ReceiptAccomodationStruct {
+  String? agent;
+  String? name;
+  ReceiptAddressStruct? address;
+  String? arrivalDate;
+  String? departureDate;
+
+  ReceiptAccomodationStruct({
+    this.agent,
+    this.name,
+    this.address,
+    this.arrivalDate,
+    this.departureDate,
+  });
+
+  Map<String, dynamic> toJson() {
+    return {
+      'agent': agent,
+      'name': name,
+      'address': address,
+      'arrivalDate': arrivalDate,
+      'departureDate': departureDate,
+    };
+  }
+
+  factory ReceiptAccomodationStruct.fromJson(Map<String, dynamic> json) {
+    return ReceiptAccomodationStruct(
+      agent: json['agent'],
+      name: json['name'],
+      address: json['address'] == null
+          ? null
+          : ReceiptAddressStruct.fromJson(json['address']),
+      arrivalDate: json['arrivalDate'],
+      departureDate: json['departureDate'],
+    );
+  }
+}
+
 class ReceiptFeeStruct {
   String? price;
   String? name;
@@ -139,41 +221,49 @@ class ReceiptFeeStruct {
 }
 
 class ReceiptAddressStruct {
+  String? original;
   String? name;
   String? address1;
   String? address2;
   String? city;
   String? state;
   String? zip;
+  String? country;
 
   ReceiptAddressStruct({
+    this.original,
     this.name,
     this.address1,
     this.address2,
     this.city,
     this.state,
     this.zip,
+    this.country,
   });
 
   Map<String, dynamic> toJson() {
     return {
+      'original': original,
       'name': name,
       'address1': address1,
       'address2': address2,
       'city': city,
       'state': state,
       'zip': zip,
+      'country': country,
     };
   }
 
   factory ReceiptAddressStruct.fromJson(Map<String, dynamic> json) {
     return ReceiptAddressStruct(
+      original: json['original'],
       name: json['name'],
       address1: json['address1'],
       address2: json['address2'],
       city: json['city'],
       state: json['state'],
       zip: json['zip'],
+      country: json['country'],
     );
   }
 }
@@ -361,6 +451,8 @@ class ReceiptStruct {
   String? preorder;
   String? returned;
   String? trackingId;
+  List<ReceiptFlightStruct>? travelFlights;
+  List<ReceiptAccomodationStruct>? travelAccomodations;
 
   ReceiptStruct({
     this.roverMerchantId,
@@ -413,6 +505,8 @@ class ReceiptStruct {
     this.preorder,
     this.returned,
     this.trackingId,
+    this.travelFlights,
+    this.travelAccomodations,
   });
 
   Map<String, dynamic> toJson() {
@@ -467,6 +561,8 @@ class ReceiptStruct {
       'preorder': preorder,
       'returned': returned,
       'trackingId': trackingId,
+      'travelFlights': travelFlights,
+      'travelAccomodations': travelAccomodations,
     };
   }
 
@@ -536,6 +632,16 @@ class ReceiptStruct {
       preorder: json['preorder'],
       returned: json['returned'],
       trackingId: json['trackingId'],
+      travelFlights: json['travelFlights'] == null
+          ? null
+          : (json['travelFlights'] as List<dynamic>)
+              .map((v) => ReceiptFlightStruct.fromJson(v))
+              .toList(),
+      travelAccomodations: json['travelAccomodations'] == null
+          ? null
+          : (json['travelAccomodations'] as List<dynamic>)
+              .map((v) => ReceiptAccomodationStruct.fromJson(v))
+              .toList(),
     );
   }
 }

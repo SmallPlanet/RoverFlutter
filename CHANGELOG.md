@@ -1,3 +1,7 @@
+## 0.1.0
+
+* RoveriOS v0.4.14 / RoverAndroid v0.4.11
+
 ## 0.0.9
 
 * Fix bug in iOS Flutter plugin

@@ -268,6 +268,54 @@ class ReceiptAddressStruct {
   }
 }
 
+class ReceiptItemOptionStruct {
+  String? title;
+  String? itemId;
+  String? upc;
+  String? quantity;
+  String? weight;
+  String? itemOptionIndex;
+  String? unitPrice;
+  String? totalPrice;
+
+  ReceiptItemOptionStruct({
+    this.title,
+    this.itemId,
+    this.upc,
+    this.quantity,
+    this.weight,
+    this.itemOptionIndex,
+    this.unitPrice,
+    this.totalPrice,
+  });
+
+  Map<String, dynamic> toJson() {
+    return {
+      'title': title,
+      'itemId': itemId,
+      'upc': upc,
+      'quantity': quantity,
+      'weight': weight,
+      'itemOptionIndex': itemOptionIndex,
+      'unitPrice': unitPrice,
+      'totalPrice': totalPrice,
+    };
+  }
+
+  factory ReceiptItemOptionStruct.fromJson(Map<String, dynamic> json) {
+    return ReceiptItemOptionStruct(
+      title: json['title'],
+      itemId: json['itemId'],
+      upc: json['upc'],
+      quantity: json['quantity'],
+      weight: json['weight'],
+      itemOptionIndex: json['itemOptionIndex'],
+      unitPrice: json['unitPrice'],
+      totalPrice: json['totalPrice'],
+    );
+  }
+}
+
 class ReceiptItemStruct {
   String? titleOriginal;
   String? title;
@@ -297,6 +345,7 @@ class ReceiptItemStruct {
   String? size;
   String? type;
   String? trackingId;
+  List<ReceiptItemOptionStruct>? itemOptions;
 
   ReceiptItemStruct({
     this.titleOriginal,
@@ -327,6 +376,7 @@ class ReceiptItemStruct {
     this.size,
     this.type,
     this.trackingId,
+    this.itemOptions,
   });
 
   Map<String, dynamic> toJson() {
@@ -359,6 +409,7 @@ class ReceiptItemStruct {
       'size': size,
       'type': type,
       'trackingId': trackingId,
+      'itemOptions': itemOptions,
     };
   }
 
@@ -396,6 +447,11 @@ class ReceiptItemStruct {
       size: json['size'],
       type: json['type'],
       trackingId: json['trackingId'],
+      itemOptions: json['itemOptions'] == null
+          ? null
+          : (json['itemOptions'] as List<dynamic>)
+              .map((v) => ReceiptItemOptionStruct.fromJson(v))
+              .toList(),
     );
   }
 }

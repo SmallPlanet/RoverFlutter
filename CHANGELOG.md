@@ -1,3 +1,7 @@
+## 0.1.1
+
+* RoveriOS v0.4.15 / RoverAndroid v0.4.12
+
 ## 0.1.0
 
 * RoveriOS v0.4.14 / RoverAndroid v0.4.11

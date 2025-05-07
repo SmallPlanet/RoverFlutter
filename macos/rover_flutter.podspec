@@ -14,7 +14,7 @@ Pod::Spec.new do |s|
   s.source           = { :path => '.' }
   s.source_files = 'Classes/**/*'
 
-  s.dependency "RoveriOS", '0.4.15'
+  s.dependency "RoveriOS", '0.4.16'
   s.dependency 'FlutterMacOS'
   s.platform = :osx, '12.0'
   

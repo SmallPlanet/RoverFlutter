@@ -477,6 +477,7 @@ class ReceiptStruct {
   String? serviceGroup;
   String? collectedDate;
   String? purchasedDate;
+  String? completedDate;
   String? continuationDate;
   String? membershipInfo;
   String? orderUrl;
@@ -531,6 +532,7 @@ class ReceiptStruct {
     this.serviceGroup,
     this.collectedDate,
     this.purchasedDate,
+    this.completedDate,
     this.continuationDate,
     this.membershipInfo,
     this.orderUrl,
@@ -587,6 +589,7 @@ class ReceiptStruct {
       'serviceGroup': serviceGroup,
       'collectedDate': collectedDate,
       'purchasedDate': purchasedDate,
+      'completedDate': completedDate,
       'continuationDate': continuationDate,
       'membershipInfo': membershipInfo,
       'orderUrl': orderUrl,
@@ -644,6 +647,7 @@ class ReceiptStruct {
       serviceGroup: json['serviceGroup'],
       collectedDate: json['collectedDate'],
       purchasedDate: json['purchasedDate'],
+      completedDate: json['completedDate'],
       continuationDate: json['continuationDate'],
       membershipInfo: json['membershipInfo'],
       orderUrl: json['orderUrl'],

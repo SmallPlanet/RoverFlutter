@@ -196,6 +196,134 @@ class ReceiptAccomodationStruct {
   }
 }
 
+class ReceiptCarRentalStruct {
+  String? pickupDate;
+  String? dropoffDate;
+  String? dropoffLocation;
+  String? pickupLocation;
+
+  ReceiptCarRentalStruct({
+    this.pickupDate,
+    this.dropoffDate,
+    this.dropoffLocation,
+    this.pickupLocation,
+  });
+
+  Map<String, dynamic> toJson() {
+    return {
+      'pickupDate': pickupDate,
+      'dropoffDate': dropoffDate,
+      'dropoffLocation': dropoffLocation,
+      'pickupLocation': pickupLocation,
+    };
+  }
+
+  factory ReceiptCarRentalStruct.fromJson(Map<String, dynamic> json) {
+    return ReceiptCarRentalStruct(
+      pickupDate: json['pickupDate'],
+      dropoffDate: json['dropoffDate'],
+      dropoffLocation: json['dropoffLocation'],
+      pickupLocation: json['pickupLocation'],
+    );
+  }
+}
+
+class ReceiptTrainStruct {
+  String? departureCity;
+  String? departureState;
+  String? departureStation;
+  String? departureDate;
+  String? arrivalCity;
+  String? arrivalState;
+  String? arrivalStation;
+  String? arrivalDate;
+  String? ticketNumber;
+  String? trainNumber;
+
+  ReceiptTrainStruct({
+    this.departureCity,
+    this.departureState,
+    this.departureStation,
+    this.departureDate,
+    this.arrivalCity,
+    this.arrivalState,
+    this.arrivalStation,
+    this.arrivalDate,
+    this.ticketNumber,
+    this.trainNumber,
+  });
+
+  Map<String, dynamic> toJson() {
+    return {
+      'departureCity': departureCity,
+      'departureState': departureState,
+      'departureStation': departureStation,
+      'departureDate': departureDate,
+      'arrivalCity': arrivalCity,
+      'arrivalState': arrivalState,
+      'arrivalStation': arrivalStation,
+      'arrivalDate': arrivalDate,
+      'ticketNumber': ticketNumber,
+      'trainNumber': trainNumber,
+    };
+  }
+
+  factory ReceiptTrainStruct.fromJson(Map<String, dynamic> json) {
+    return ReceiptTrainStruct(
+      departureCity: json['departureCity'],
+      departureState: json['departureState'],
+      departureStation: json['departureStation'],
+      departureDate: json['departureDate'],
+      arrivalCity: json['arrivalCity'],
+      arrivalState: json['arrivalState'],
+      arrivalStation: json['arrivalStation'],
+      arrivalDate: json['arrivalDate'],
+      ticketNumber: json['ticketNumber'],
+      trainNumber: json['trainNumber'],
+    );
+  }
+}
+
+class ReceiptBusStruct {
+  String? departureDate;
+  String? departureCity;
+  String? departureStation;
+  String? arrivalDate;
+  String? arrivalCity;
+  String? arrivalStation;
+
+  ReceiptBusStruct({
+    this.departureDate,
+    this.departureCity,
+    this.departureStation,
+    this.arrivalDate,
+    this.arrivalCity,
+    this.arrivalStation,
+  });
+
+  Map<String, dynamic> toJson() {
+    return {
+      'departureDate': departureDate,
+      'departureCity': departureCity,
+      'departureStation': departureStation,
+      'arrivalDate': arrivalDate,
+      'arrivalCity': arrivalCity,
+      'arrivalStation': arrivalStation,
+    };
+  }
+
+  factory ReceiptBusStruct.fromJson(Map<String, dynamic> json) {
+    return ReceiptBusStruct(
+      departureDate: json['departureDate'],
+      departureCity: json['departureCity'],
+      departureStation: json['departureStation'],
+      arrivalDate: json['arrivalDate'],
+      arrivalCity: json['arrivalCity'],
+      arrivalStation: json['arrivalStation'],
+    );
+  }
+}
+
 class ReceiptFeeStruct {
   String? price;
   String? name;
@@ -510,6 +638,10 @@ class ReceiptStruct {
   String? trackingId;
   List<ReceiptFlightStruct>? travelFlights;
   List<ReceiptAccomodationStruct>? travelAccomodations;
+  List<ReceiptCarRentalStruct>? travelCarRentals;
+  List<ReceiptTrainStruct>? travelTrains;
+  List<ReceiptBusStruct>? travelBuses;
+  ReceiptStreamingVideoStruct? streamingVideo;
 
   ReceiptStruct({
     this.roverMerchantId,
@@ -565,6 +697,10 @@ class ReceiptStruct {
     this.trackingId,
     this.travelFlights,
     this.travelAccomodations,
+    this.travelCarRentals,
+    this.travelTrains,
+    this.travelBuses,
+    this.streamingVideo,
   });
 
   Map<String, dynamic> toJson() {
@@ -622,6 +758,10 @@ class ReceiptStruct {
       'trackingId': trackingId,
       'travelFlights': travelFlights,
       'travelAccomodations': travelAccomodations,
+      'travelCarRentals': travelCarRentals,
+      'travelTrains': travelTrains,
+      'travelBuses': travelBuses,
+      'streamingVideo': streamingVideo,
     };
   }
 
@@ -702,6 +842,216 @@ class ReceiptStruct {
           : (json['travelAccomodations'] as List<dynamic>)
               .map((v) => ReceiptAccomodationStruct.fromJson(v))
               .toList(),
+      travelCarRentals: json['travelCarRentals'] == null
+          ? null
+          : (json['travelCarRentals'] as List<dynamic>)
+              .map((v) => ReceiptCarRentalStruct.fromJson(v))
+              .toList(),
+      travelTrains: json['travelTrains'] == null
+          ? null
+          : (json['travelTrains'] as List<dynamic>)
+              .map((v) => ReceiptTrainStruct.fromJson(v))
+              .toList(),
+      travelBuses: json['travelBuses'] == null
+          ? null
+          : (json['travelBuses'] as List<dynamic>)
+              .map((v) => ReceiptBusStruct.fromJson(v))
+              .toList(),
+      streamingVideo: json['streamingVideo'] == null
+          ? null
+          : ReceiptStreamingVideoStruct.fromJson(json['streamingVideo']),
+    );
+  }
+}
+
+class ReceiptStreamingVideoProfileStruct {
+  String? id;
+  String? name;
+  String? isKids;
+  String? isMain;
+  String? birthday;
+  String? gender;
+  String? createdDate;
+
+  ReceiptStreamingVideoProfileStruct({
+    this.id,
+    this.name,
+    this.isKids,
+    this.isMain,
+    this.birthday,
+    this.gender,
+    this.createdDate,
+  });
+
+  Map<String, dynamic> toJson() {
+    return {
+      'id': id,
+      'name': name,
+      'isKids': isKids,
+      'isMain': isMain,
+      'birthday': birthday,
+      'gender': gender,
+      'createdDate': createdDate,
+    };
+  }
+
+  factory ReceiptStreamingVideoProfileStruct.fromJson(
+      Map<String, dynamic> json) {
+    return ReceiptStreamingVideoProfileStruct(
+      id: json['id'],
+      name: json['name'],
+      isKids: json['isKids'],
+      isMain: json['isMain'],
+      birthday: json['birthday'],
+      gender: json['gender'],
+      createdDate: json['createdDate'],
+    );
+  }
+}
+
+class ReceiptStreamingVideoExtraValueStruct {
+  String? service;
+  String? key;
+  String? value;
+
+  ReceiptStreamingVideoExtraValueStruct({
+    this.service,
+    this.key,
+    this.value,
+  });
+
+  Map<String, dynamic> toJson() {
+    return {
+      'service': service,
+      'key': key,
+      'value': value,
+    };
+  }
+
+  factory ReceiptStreamingVideoExtraValueStruct.fromJson(
+      Map<String, dynamic> json) {
+    return ReceiptStreamingVideoExtraValueStruct(
+      service: json['service'],
+      key: json['key'],
+      value: json['value'],
+    );
+  }
+}
+
+class ReceiptStreamingVideoStruct {
+  ReceiptStreamingVideoProfileStruct? profile;
+  List<ReceiptStreamingVideoExtraValueStruct>? extraValues;
+  String? seriesTitle;
+  String? seriesAsin;
+  String? seriesId;
+  String? seriesDescription;
+  String? seriesUrl;
+  String? seriesImage;
+  String? seasonTitle;
+  String? seasonAsin;
+  String? seasonId;
+  String? seasonDescription;
+  String? seasonUrl;
+  String? seasonImage;
+  String? videoTitle;
+  String? videoAsin;
+  String? videoId;
+  String? videoDescription;
+  String? videoUrl;
+  String? videoImage;
+  String? videoLengthSeconds;
+  String? videoWatchedSeconds;
+  String? viewDate;
+  String? videoType;
+
+  ReceiptStreamingVideoStruct({
+    this.profile,
+    this.extraValues,
+    this.seriesTitle,
+    this.seriesAsin,
+    this.seriesId,
+    this.seriesDescription,
+    this.seriesUrl,
+    this.seriesImage,
+    this.seasonTitle,
+    this.seasonAsin,
+    this.seasonId,
+    this.seasonDescription,
+    this.seasonUrl,
+    this.seasonImage,
+    this.videoTitle,
+    this.videoAsin,
+    this.videoId,
+    this.videoDescription,
+    this.videoUrl,
+    this.videoImage,
+    this.videoLengthSeconds,
+    this.videoWatchedSeconds,
+    this.viewDate,
+    this.videoType,
+  });
+
+  Map<String, dynamic> toJson() {
+    return {
+      'profile': profile,
+      'extraValues': extraValues,
+      'seriesTitle': seriesTitle,
+      'seriesAsin': seriesAsin,
+      'seriesId': seriesId,
+      'seriesDescription': seriesDescription,
+      'seriesUrl': seriesUrl,
+      'seriesImage': seriesImage,
+      'seasonTitle': seasonTitle,
+      'seasonAsin': seasonAsin,
+      'seasonId': seasonId,
+      'seasonDescription': seasonDescription,
+      'seasonUrl': seasonUrl,
+      'seasonImage': seasonImage,
+      'videoTitle': videoTitle,
+      'videoAsin': videoAsin,
+      'videoId': videoId,
+      'videoDescription': videoDescription,
+      'videoUrl': videoUrl,
+      'videoImage': videoImage,
+      'videoLengthSeconds': videoLengthSeconds,
+      'videoWatchedSeconds': videoWatchedSeconds,
+      'viewDate': viewDate,
+      'videoType': videoType,
+    };
+  }
+
+  factory ReceiptStreamingVideoStruct.fromJson(Map<String, dynamic> json) {
+    return ReceiptStreamingVideoStruct(
+      profile: json['profile'] == null
+          ? null
+          : ReceiptStreamingVideoProfileStruct.fromJson(json['profile']),
+      extraValues: json['extraValues'] == null
+          ? null
+          : (json['extraValues'] as List<dynamic>)
+              .map((v) => ReceiptStreamingVideoExtraValueStruct.fromJson(v))
+              .toList(),
+      seriesTitle: json['seriesTitle'],
+      seriesAsin: json['seriesAsin'],
+      seriesId: json['seriesId'],
+      seriesDescription: json['seriesDescription'],
+      seriesUrl: json['seriesUrl'],
+      seriesImage: json['seriesImage'],
+      seasonTitle: json['seasonTitle'],
+      seasonAsin: json['seasonAsin'],
+      seasonId: json['seasonId'],
+      seasonDescription: json['seasonDescription'],
+      seasonUrl: json['seasonUrl'],
+      seasonImage: json['seasonImage'],
+      videoTitle: json['videoTitle'],
+      videoAsin: json['videoAsin'],
+      videoId: json['videoId'],
+      videoDescription: json['videoDescription'],
+      videoUrl: json['videoUrl'],
+      videoImage: json['videoImage'],
+      videoLengthSeconds: json['videoLengthSeconds'],
+      videoWatchedSeconds: json['videoWatchedSeconds'],
+      viewDate: json['viewDate'],
+      videoType: json['videoType'],
     );
   }
 }

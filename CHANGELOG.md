@@ -1,3 +1,7 @@
+## 0.1.4
+
+* Add support for background collections (WorkManager on Android, BGProcessingTask on iOS)
+
 ## 0.1.3
 
 * RoveriOS v0.4.19 / RoverAndroid v0.4.16

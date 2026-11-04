@@ -185,4 +185,20 @@ class RoverFlutter {
       'merchantId': merchantId,
     });
   }
+
+  /// To perform periodic collections you need to:
+  /// 1. follow the native platform specific instructions in the readme
+  /// 2. call this method to provide functions to run when background collection is ready
+  ///    to start and when background collection is finished.
+  Future<void> scheduleBackgroundCollections({
+    required void Function(String taskIdentifier) collectionWillStart,
+    required void Function(
+        String taskIdentifier, List<ConnectionStruct> connections)
+        collectionWillFinish,
+  }) {
+    return RoverFlutterPlatform.instance.didScheduleBackgroundCollections(
+      collectionWillStart: collectionWillStart,
+      collectionWillFinish: collectionWillFinish,
+    );
+  }
 }

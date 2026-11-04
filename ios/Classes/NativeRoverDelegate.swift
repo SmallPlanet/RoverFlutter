@@ -11,7 +11,7 @@ class NativeRoverDelegate: RoverDelegate {
         self.uuid = uuid
         self.roverFlutterPlugin = roverFlutterPlugin
     }
-
+    
     override func roverDidFinish(sessionUUID: String,
                                  resultsGzip: Data,
                                  error: String?,
@@ -83,6 +83,26 @@ class NativeRoverDelegate: RoverDelegate {
         
         roverFlutterPlugin.send(uuid, argsJson) { args, error in }
     }
+    
+    override func roverAnalyticsEvent(name: String,
+                                     parameters: [String: String]) {
+        struct Args: Codable {
+            let delegateUUID: String
+            let delegateFunc: String
+            let name: String
+            let parameters: [String: String]
+        }
+        let args = Args(delegateUUID: uuid,
+                        delegateFunc: "roverAnalyticsEvent",
+                        name: name,
+                        parameters: parameters)
+        
+        guard let argsJson = try? args.json() else {
+            return
+        }
+        
+        roverFlutterPlugin.send(uuid, argsJson) { args, error in }
+    }
 
     override func roverHasStatus(sessionUUID: String,
                                  progress: Double,
@@ -128,6 +148,7 @@ class NativeRoverDelegate: RoverDelegate {
                                        newAccount: String,
                                        password: String,
                                        cookiesBase64: String?,
+                                       wasUserInteractionRequired: Bool,
                                        callback: @escaping (_ error: String?, _ appInfo: String?) -> ()) {
         struct Args: Codable {
             let delegateUUID: String
@@ -137,6 +158,7 @@ class NativeRoverDelegate: RoverDelegate {
             let newAccount: String
             let password: String
             let cookiesBase64: String?
+            let wasUserInteractionRequired: Bool
         }
         let args = Args(delegateUUID: uuid,
                         delegateFunc: "roverAccountDidLogin",
@@ -144,7 +166,8 @@ class NativeRoverDelegate: RoverDelegate {
                         oldAccount: oldAccount,
                         newAccount: newAccount,
                         password: password,
-                        cookiesBase64: cookiesBase64)
+                        cookiesBase64: cookiesBase64,
+                        wasUserInteractionRequired: wasUserInteractionRequired)
         
         guard let argsJson = try? args.json() else {
             return callback("failed to serialize args", nil)
@@ -153,5 +176,28 @@ class NativeRoverDelegate: RoverDelegate {
         roverFlutterPlugin.send(uuid, argsJson) { args, error in
             callback(error, args)
         }
+    }
+    
+    override func roverIMAPDidConnect(sessionUUID: String,
+                                      account: String,
+                                      appPassword: String) {
+        struct Args: Codable {
+            let delegateUUID: String
+            let delegateFunc: String
+            let sessionUUID: String
+            let account: String
+            let appPassword: String
+        }
+        let args = Args(delegateUUID: uuid,
+                        delegateFunc: "roverIMAPDidConnect",
+                        sessionUUID: sessionUUID,
+                        account: account,
+                        appPassword: appPassword)
+        
+        guard let argsJson = try? args.json() else {
+            return
+        }
+        
+        roverFlutterPlugin.send(uuid, argsJson) { args, error in }
     }
 }

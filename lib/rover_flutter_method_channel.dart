@@ -4,6 +4,7 @@ import 'package:rover_flutter/rover_flutter_delegate.dart';
 import 'package:rover_flutter/rover_flutter_receipt.dart';
 
 import 'rover_flutter_platform_interface.dart';
+
 import 'dart:convert';
 
 class MethodChannelRoverFlutter extends RoverFlutterPlatform {
@@ -11,6 +12,10 @@ class MethodChannelRoverFlutter extends RoverFlutterPlatform {
   final methodChannel = const MethodChannel('smallplanet.com/rover_flutter');
 
   Map<String, RoverDelegate> delegates = {};
+
+  void Function(String taskIdentifier)? _collectionWillStart;
+  void Function(String taskIdentifier, List<ConnectionStruct> connections)?
+  _collectionWillFinish;
 
   MethodChannelRoverFlutter() {
     methodChannel.setMethodCallHandler((MethodCall call) async {
@@ -34,72 +39,126 @@ class MethodChannelRoverFlutter extends RoverFlutterPlatform {
         try {
           switch (delegateFunc) {
             case "roverDidFinish":
-              delegate.roverDidFinish(args["sessionUUID"], args["error"],
-                  args["userError"], args["verboseError"]);
-              RoverFlutterPlatform.instance
-                  .sendResult(hookUUID, delegate.uuid, null, null);
+              delegate.roverDidFinish(
+                args["sessionUUID"],
+                args["error"],
+                args["userError"],
+                args["verboseError"],
+              );
+              RoverFlutterPlatform.instance.sendResult(
+                hookUUID,
+                delegate.uuid,
+                null,
+                null,
+              );
               delegates.remove(delegateUUID);
               break;
             case "roverDidInit":
-              delegate.roverDidInit(args["sessionUUID"], args["scrapeRequest"],
-                  (scrapeRequest, error) {
-                RoverFlutterPlatform.instance.sendResult(
-                    hookUUID, delegate.uuid, jsonEncode(scrapeRequest), error);
-              });
+              delegate.roverDidInit(
+                args["sessionUUID"],
+                args["scrapeRequest"],
+                (scrapeRequest, error) {
+                  RoverFlutterPlatform.instance.sendResult(
+                    hookUUID,
+                    delegate.uuid,
+                    jsonEncode(scrapeRequest),
+                    error,
+                  );
+                },
+              );
               break;
             case "roverDidCollect":
               delegate.roverDidCollect(
-                  args["sessionUUID"],
-                  (args["receipts"] as List<dynamic>)
-                      .map((v) => ReceiptStruct.fromJson(v))
-                      .toList());
-              RoverFlutterPlatform.instance
-                  .sendResult(hookUUID, delegate.uuid, null, null);
+                args["sessionUUID"],
+                (args["receipts"] as List<dynamic>)
+                    .map((v) => ReceiptStruct.fromJson(v))
+                    .toList(),
+              );
+              RoverFlutterPlatform.instance.sendResult(
+                hookUUID,
+                delegate.uuid,
+                null,
+                null,
+              );
               break;
             case "roverHasStatus":
               delegate.roverHasStatus(
-                  args["sessionUUID"],
-                  args["progress"].toDouble(),
-                  args["stepProgress"].toDouble(),
-                  args["currentStep"],
-                  args["maxSteps"],
-                  args["merchantVersion"],
-                  args["tagLog"].cast<String>(),
-                  args["userTag"]);
-              RoverFlutterPlatform.instance
-                  .sendResult(hookUUID, delegate.uuid, null, null);
+                args["sessionUUID"],
+                args["progress"].toDouble(),
+                args["stepProgress"].toDouble(),
+                args["currentStep"],
+                args["maxSteps"],
+                args["merchantVersion"],
+                args["tagLog"].cast<String>(),
+                args["userTag"],
+              );
+              RoverFlutterPlatform.instance.sendResult(
+                hookUUID,
+                delegate.uuid,
+                null,
+                null,
+              );
               break;
             case "roverAccountDidLogin":
               delegate.roverAccountDidLogin(
-                  args["sessionUUID"],
-                  args["oldAccount"],
-                  args["newAccount"],
-                  args["password"],
-                  args["cookiesBase64"], (error, appInfo) {
-                RoverFlutterPlatform.instance
-                    .sendResult(hookUUID, delegate.uuid, appInfo, error);
-              });
+                args["sessionUUID"],
+                args["oldAccount"],
+                args["newAccount"],
+                args["password"],
+                args["cookiesBase64"],
+                (error, appInfo) {
+                  RoverFlutterPlatform.instance.sendResult(
+                    hookUUID,
+                    delegate.uuid,
+                    appInfo,
+                    error,
+                  );
+                },
+              );
               break;
           }
         } catch (e, stackTrace) {
-          debugPrint("Exception caught: $e");
-          debugPrint("StackTrace: $stackTrace");
+          debugPrint("ROVER: Exception caught: $e");
+          debugPrint("ROVER: StackTrace: $stackTrace");
+        }
+      } else if (call.method == "callBackgroundCollection") {
+        String argsJson = call.arguments["argsJson"];
+        try {
+          Map<String, dynamic> args = jsonDecode(argsJson);
+          String taskIdentifier = args["taskIdentifier"];
+          if (args["connections"] == null) {
+            _collectionWillStart?.call(taskIdentifier);
+          } else {
+            List<ConnectionStruct> connections =
+                (args["connections"] as List<dynamic>)
+                    .map((connection) => ConnectionStruct.fromJson(connection))
+                    .toList();
+            _collectionWillFinish?.call(taskIdentifier, connections);
+          }
+        } catch (e, stackTrace) {
+          debugPrint("ROVER: Exception caught: $e");
+          debugPrint("ROVER: StackTrace: $stackTrace");
         }
       }
     });
   }
 
   @override
-  Future<void> sendResult(String hookUUID, String delegateUUID,
-      String? argsJson, String? error) async {
+  Future<void> sendResult(
+    String hookUUID,
+    String delegateUUID,
+    String? argsJson,
+    String? error,
+  ) async {
     await methodChannel.invokeMethod<String>(
-        'sendResult',
-        jsonEncode({
-          "hookUUID": hookUUID,
-          "delegateUUID": delegateUUID,
-          "argsJson": argsJson,
-          "error": error
-        }));
+      'sendResult',
+      jsonEncode({
+        "hookUUID": hookUUID,
+        "delegateUUID": delegateUUID,
+        "argsJson": argsJson,
+        "error": error,
+      }),
+    );
   }
 
   @override
@@ -131,8 +190,10 @@ class MethodChannelRoverFlutter extends RoverFlutterPlatform {
 
   @override
   Future<List<MerchantStruct>> configure(Map<String, dynamic> args) async {
-    final value =
-        await methodChannel.invokeMethod<String>('configure', jsonEncode(args));
+    final value = await methodChannel.invokeMethod<String>(
+      'configure',
+      jsonEncode(args),
+    );
     if (value == null) {
       throw StateError('configure returned null');
     }
@@ -143,7 +204,9 @@ class MethodChannelRoverFlutter extends RoverFlutterPlatform {
 
   @override
   Future<void> collect(
-      Map<String, dynamic> args, RoverDelegate delegate) async {
+    Map<String, dynamic> args,
+    RoverDelegate delegate,
+  ) async {
     delegates[delegate.uuid] = delegate;
     args["delegateUUID"] = delegate.uuid;
     await methodChannel.invokeMethod<String>('collect', jsonEncode(args));
@@ -161,11 +224,15 @@ class MethodChannelRoverFlutter extends RoverFlutterPlatform {
 
   @override
   Future<Map<String, dynamic>> preconfig(
-      Map<String, dynamic> args, RoverDelegate delegate) async {
+    Map<String, dynamic> args,
+    RoverDelegate delegate,
+  ) async {
     delegates[delegate.uuid] = delegate;
     args["delegateUUID"] = delegate.uuid;
-    final value =
-        await methodChannel.invokeMethod<String>('preconfig', jsonEncode(args));
+    final value = await methodChannel.invokeMethod<String>(
+      'preconfig',
+      jsonEncode(args),
+    );
     if (value == null) {
       throw StateError('preconfig returned null');
     }
@@ -186,5 +253,22 @@ class MethodChannelRoverFlutter extends RoverFlutterPlatform {
   @override
   Future<void> remove(Map<String, dynamic> args) async {
     await methodChannel.invokeMethod<String>('remove', jsonEncode(args));
+  }
+
+  @override
+  Future<void> didScheduleBackgroundCollections({
+    required void Function(String taskIdentifier) collectionWillStart,
+    required void Function(
+      String taskIdentifier,
+      List<ConnectionStruct> connections,
+    )
+    collectionWillFinish,
+  }) async {
+    _collectionWillStart = collectionWillStart;
+    _collectionWillFinish = collectionWillFinish;
+    await methodChannel.invokeMethod(
+      'didScheduleBackgroundCollections',
+      jsonEncode({}),
+    );
   }
 }

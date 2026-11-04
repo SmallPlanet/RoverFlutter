@@ -63,4 +63,13 @@ abstract class RoverFlutterPlatform extends PlatformInterface {
   Future<void> remove(Map<String, dynamic> args) {
     throw UnimplementedError('to be implemented');
   }
+
+  Future<void> didScheduleBackgroundCollections({
+    required void Function(String taskIdentifier) collectionWillStart,
+    required void Function(
+        String taskIdentifier, List<ConnectionStruct> connections)
+        collectionWillFinish,
+  }) {
+    throw UnimplementedError('to be implemented');
+  }
 }

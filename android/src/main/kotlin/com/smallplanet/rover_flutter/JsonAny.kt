@@ -32,7 +32,7 @@ class RNRJsonAny {
         fun <T> parseError(json: String, classOfT: Class<T>): String {
           return try {
             gson.fromJson(json, classOfT)
-            "unknown error"
+            "RNRJsonAny unknown error"
           } catch (e: Exception) {
             e.message.toString()
           }

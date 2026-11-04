@@ -2,20 +2,32 @@ package com.smallplanet.rover_flutter
 
 import android.content.Context
 import android.content.pm.PackageManager
+import android.os.Handler
+import android.os.Looper
+import android.os.SystemClock
+import android.util.Log
 import androidx.annotation.NonNull
 import androidx.appcompat.app.AppCompatActivity
 
 import androidx.fragment.app.FragmentActivity
 import androidx.fragment.app.FragmentManager
+import androidx.work.ListenableWorker
 
 import io.flutter.embedding.engine.plugins.FlutterPlugin
 import io.flutter.plugin.common.MethodCall
 import io.flutter.plugin.common.MethodChannel
 import io.flutter.plugin.common.MethodChannel.MethodCallHandler
 import io.flutter.plugin.common.MethodChannel.Result
+import com.smallplanet.roverandroid.Connection
 import com.smallplanet.roverandroid.Rover
+import io.flutter.FlutterInjector
+import io.flutter.embedding.engine.FlutterEngine
+import io.flutter.embedding.engine.FlutterEngineCache
+import io.flutter.embedding.engine.dart.DartExecutor
 import io.flutter.embedding.engine.plugins.activity.ActivityAware
 import io.flutter.embedding.engine.plugins.activity.ActivityPluginBinding
+import kotlinx.coroutines.delay
+import java.util.ArrayList
 import java.util.Date
 import java.util.UUID
 
@@ -33,7 +45,16 @@ class RoverFlutterPlugin: FlutterPlugin, MethodCallHandler, ActivityAware {
   private var waitingForResponseFromDelegate: HashMap<String, ResponseBlock> = hashMapOf()
   private var delegates: HashMap<String, NativeRoverDelegate> = hashMapOf()
 
+  private val mainHandler = Handler(Looper.getMainLooper())
+
+
   companion object {
+    const val TASK_IDENTIFIER = "com.smallplanet.rover.processing"
+
+    private val pendingGlobalSend = mutableListOf<String>()
+    private var pendingGlobalSendDidUpdate: () -> Unit = { }
+    private var dartDidScheduleBackgroundCollections = false
+
     fun getPackageName(): String? {
       return Rover.getPackageName()
     }
@@ -41,6 +62,66 @@ class RoverFlutterPlugin: FlutterPlugin, MethodCallHandler, ActivityAware {
     fun getPackageManager(appPackageName: String,
                           appPackageManager: PackageManager): PackageManager? {
       return Rover.getPackageManager(appPackageName, appPackageManager)
+    }
+
+    fun initBackgroundCollection(applicationContext: Context) {
+      if (FlutterEngineCache.getInstance().get(TASK_IDENTIFIER) == null) {
+        val engine = FlutterEngine(applicationContext)
+
+        // Register plugins before running Dart so channels are ready.
+        if (!engine.plugins.has(RoverFlutterPlugin::class.java)) {
+          engine.plugins.add(RoverFlutterPlugin())
+        }
+
+        val loader = FlutterInjector.instance().flutterLoader()
+        engine.dartExecutor.executeDartEntrypoint(
+          DartExecutor.DartEntrypoint(loader.findAppBundlePath(), "scheduleBackgroundCollections")
+        )
+
+        FlutterEngineCache.getInstance().put(TASK_IDENTIFIER, engine)
+      }
+    }
+
+    suspend fun scheduleBackgroundCollections(context: Context): ListenableWorker.Result {
+      // wait for the Dart side to be ready
+      val deadline = SystemClock.elapsedRealtime() + 30000
+      while (true) {
+        var ready = false
+        synchronized(pendingGlobalSend) {
+          ready = dartDidScheduleBackgroundCollections
+        }
+        if (ready) {
+          break
+        }
+        val remaining = deadline - SystemClock.elapsedRealtime()
+        if (remaining <= 0) {
+          return ListenableWorker.Result.failure()
+        }
+        delay(minOf(250L, remaining))
+      }
+
+      return Rover.scheduleBackgroundCollections(collectionWillStart = {
+        data class ArgsStart(
+          var taskIdentifier: String,
+        )
+        val args = ArgsStart(TASK_IDENTIFIER)
+        val argsJson = RNRJsonAny.toJson(args) ?: return@scheduleBackgroundCollections
+        synchronized(pendingGlobalSend) {
+          pendingGlobalSend.add(argsJson)
+        }
+        pendingGlobalSendDidUpdate()
+      }, collectionWillFinish = { connections ->
+        data class ArgsFinish(
+          var taskIdentifier: String,
+          var connections: List<Connection>
+        )
+        val args = ArgsFinish(TASK_IDENTIFIER, connections)
+        val argsJson = RNRJsonAny.toJson(args) ?: return@scheduleBackgroundCollections
+        synchronized(pendingGlobalSend) {
+          pendingGlobalSend.add(argsJson)
+        }
+        pendingGlobalSendDidUpdate()
+      })
     }
   }
 
@@ -80,7 +161,12 @@ class RoverFlutterPlugin: FlutterPlugin, MethodCallHandler, ActivityAware {
            returnCallback: ResponseBlock) {
     val hookUUID = newUUID()
     waitingForResponseFromDelegate[hookUUID] = returnCallback
-    channel.invokeMethod("callDelegate", mutableMapOf("hookUUID" to hookUUID, "delegateUUID" to delegateUUID, "argsJson" to argsJson))
+    mainHandler.post {
+      channel.invokeMethod(
+        "callDelegate",
+        mutableMapOf("hookUUID" to hookUUID, "delegateUUID" to delegateUUID, "argsJson" to argsJson)
+      )
+    }
   }
 
   override fun onMethodCall(call: MethodCall, result: Result) {
@@ -106,9 +192,37 @@ class RoverFlutterPlugin: FlutterPlugin, MethodCallHandler, ActivityAware {
       remove(call, result)
     } else if (call.method == "sendResult") {
       sendResult(call, result)
+    } else if (call.method == "didScheduleBackgroundCollections") {
+      didScheduleBackgroundCollections(result)
     } else {
       result.notImplemented()
     }
+  }
+
+  fun didScheduleBackgroundCollections(result: Result) {
+    synchronized(pendingGlobalSend) {
+      dartDidScheduleBackgroundCollections = true
+      pendingGlobalSendDidUpdate = {
+        mainHandler.post {
+
+          val events: List<String>
+          synchronized(pendingGlobalSend) {
+            events = ArrayList(pendingGlobalSend)
+            pendingGlobalSend.clear()
+          }
+          for (event in events) {
+            try {
+              channel.invokeMethod("callBackgroundCollection", mutableMapOf("argsJson" to event))
+            } catch (e: Exception) {
+              // engine is no longer attached; drop the event
+              Log.d("ROVER", "exception in didScheduleBackgroundCollections: ${e}")
+            }
+          }
+        }
+      }
+    }
+    pendingGlobalSendDidUpdate()
+    result.success(null)
   }
 
   fun sendResult(call: MethodCall,
@@ -143,8 +257,6 @@ class RoverFlutterPlugin: FlutterPlugin, MethodCallHandler, ActivityAware {
 
   fun configure(call: MethodCall,
                 result: Result) {
-    val fragmentManager = fragmentManager ?: return rerror(result, "Fragment manager not found")
-
     data class Args(var licenseKey: String,
                     var environment: String,
                     var deviceId: String?,

@@ -18,12 +18,16 @@ fileprivate func rerror(_ result: @escaping FlutterResult, _ error: String) {
 }
 
 public class RoverFlutterPlugin: NSObject, FlutterPlugin {
-    
+
     private var delegates: [String: NativeRoverDelegate] = [:]
     private let channel: FlutterMethodChannel
-    
+
     private var waitingForResponseFromDelegate: [String: ResponseBlock] = [:]
-    
+
+    private static let pendingGlobalSendLock = NSLock()
+    private static var pendingGlobalSend: [String] = []
+    private static var pendingGlobalSendDidUpdate: () -> () = { }
+
     public static func register(with registrar: FlutterPluginRegistrar) {
 #if canImport(Cocoa)
         let channel = FlutterMethodChannel(name: "smallplanet.com/rover_flutter", binaryMessenger: registrar.messenger)
@@ -37,6 +41,40 @@ public class RoverFlutterPlugin: NSObject, FlutterPlugin {
 #endif
     }
     
+    // Call this from your AppDelegate to initialize periodic background
+    // collections (BGProcessingTask) at the given interval in seconds.
+    public static func initBackgroundCollection(interval: TimeInterval) {
+#if canImport(UIKit)
+        Rover.shared.scheduleBackgroundCollections(interval: interval,
+                                                   collectionWillStart: { taskIdentifier in
+            struct Args: Codable {
+                var taskIdentifier: String
+            }
+            let args = Args(taskIdentifier: taskIdentifier)
+            guard let argsJson = try? args.json() else { return }
+            pendingGlobalSendLock.lock()
+            pendingGlobalSend.append(argsJson)
+            pendingGlobalSendLock.unlock()
+
+            pendingGlobalSendDidUpdate()
+        },
+                                                   collectionWillFinish: { taskIdentifier, connections in
+            struct Args: Codable {
+                var taskIdentifier: String
+                var connections: [RoveriOS.Connection]
+            }
+            let args = Args(taskIdentifier: taskIdentifier,
+                            connections: connections)
+            guard let argsJson = try? args.json() else { return }
+            pendingGlobalSendLock.lock()
+            pendingGlobalSend.append(argsJson)
+            pendingGlobalSendLock.unlock()
+
+            pendingGlobalSendDidUpdate()
+        })
+#endif
+    }
+
     init(channel: FlutterMethodChannel) {
         self.channel = channel
     }
@@ -78,9 +116,28 @@ public class RoverFlutterPlugin: NSObject, FlutterPlugin {
             remove(call, result: result)
         case "sendResult":
             sendResult(call, result: result)
+        case "didScheduleBackgroundCollections":
+            didScheduleBackgroundCollections(call, result: result)
         default:
             result(FlutterMethodNotImplemented)
         }
+    }
+
+    func didScheduleBackgroundCollections(_ call: FlutterMethodCall,
+                                          result: @escaping FlutterResult) {
+        Self.pendingGlobalSendDidUpdate = { [weak self] in
+            guard let self = self else { return }
+            var events: [String] = []
+            Self.pendingGlobalSendLock.lock()
+            events = Self.pendingGlobalSend
+            Self.pendingGlobalSend.removeAll()
+            Self.pendingGlobalSendLock.unlock()
+            for event in events {
+                self.channel.invokeMethod("callBackgroundCollection", arguments: ["argsJson": event])
+            }
+        }
+        Self.pendingGlobalSendDidUpdate()
+        result(nil)
     }
     
     func sendResult(_ call: FlutterMethodCall,

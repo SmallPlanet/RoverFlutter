@@ -18,6 +18,8 @@ class ConnectionStruct {
   String? password;
   String? cookiesBase64;
   DateTime? fromDate;
+  DateTime? collectedDate;
+  DateTime? attemptedDate;
   String? appInfo;
   List<String>? featureFlags;
   bool userInteractionRequired;
@@ -28,6 +30,8 @@ class ConnectionStruct {
     this.password,
     this.cookiesBase64,
     this.fromDate,
+    this.collectedDate,
+    this.attemptedDate,
     this.appInfo,
     this.featureFlags,
     required this.userInteractionRequired,
@@ -40,6 +44,8 @@ class ConnectionStruct {
       'password': password,
       'cookiesBase64': cookiesBase64,
       'fromDate': fromDate?.toIso8601String(),
+      'collectedDate': collectedDate?.toIso8601String(),
+      'attemptedDate': attemptedDate?.toIso8601String(),
       'appInfo': appInfo,
       'featureFlags': featureFlags,
       'userInteractionRequired': userInteractionRequired,
@@ -52,8 +58,15 @@ class ConnectionStruct {
       account: json['account'],
       password: json['password'],
       cookiesBase64: json['cookiesBase64'],
-      fromDate:
-          json['fromDate'] == null ? null : DateTime.parse(json['fromDate']),
+      fromDate: json['fromDate'] == null
+          ? null
+          : DateTime.parse(json['fromDate']),
+      collectedDate: json['collectedDate'] == null
+          ? null
+          : DateTime.parse(json['collectedDate']),
+      attemptedDate: json['attemptedDate'] == null
+          ? null
+          : DateTime.parse(json['attemptedDate']),
       appInfo: json['appInfo'],
       featureFlags: json['featureFlags'] == null
           ? null
@@ -113,6 +126,183 @@ class MerchantStruct {
 
 // MARK: - ScrapeStatus
 // MARK: ScrapeRequest
+class RoverServerEdgeConfigStruct {
+  String? authorization;
+  String? listenAddress;
+  int? listenPort;
+  String? routeAddress;
+  int? routePort;
+  String? requestsUrl;
+  String resultsUrl;
+  String? receiptsUrl;
+  String? statusUrl;
+  bool debug;
+  bool verboseErrors;
+  bool permissiveResponses;
+  String? intelligenceModelFlag;
+  List<String> userAgentTags;
+  String? proxy;
+
+  RoverServerEdgeConfigStruct({
+    this.authorization,
+    this.listenAddress,
+    this.listenPort,
+    this.routeAddress,
+    this.routePort,
+    this.requestsUrl,
+    required this.resultsUrl,
+    this.receiptsUrl,
+    this.statusUrl,
+    required this.debug,
+    required this.verboseErrors,
+    required this.permissiveResponses,
+    this.intelligenceModelFlag,
+    required this.userAgentTags,
+    this.proxy,
+  });
+
+  Map<String, dynamic> toJson() {
+    return {
+      'authorization': authorization,
+      'listenAddress': listenAddress,
+      'listenPort': listenPort,
+      'routeAddress': routeAddress,
+      'routePort': routePort,
+      'requestsUrl': requestsUrl,
+      'resultsUrl': resultsUrl,
+      'receiptsUrl': receiptsUrl,
+      'statusUrl': statusUrl,
+      'debug': debug,
+      'verboseErrors': verboseErrors,
+      'permissiveResponses': permissiveResponses,
+      'intelligenceModelFlag': intelligenceModelFlag,
+      'userAgentTags': userAgentTags,
+      'proxy': proxy,
+    };
+  }
+
+  factory RoverServerEdgeConfigStruct.fromJson(Map<String, dynamic> json) {
+    return RoverServerEdgeConfigStruct(
+      authorization: json['authorization'],
+      listenAddress: json['listenAddress'],
+      listenPort: json['listenPort'],
+      routeAddress: json['routeAddress'],
+      routePort: json['routePort'],
+      requestsUrl: json['requestsUrl'],
+      resultsUrl: json['resultsUrl'],
+      receiptsUrl: json['receiptsUrl'],
+      statusUrl: json['statusUrl'],
+      debug: json['debug'],
+      verboseErrors: json['verboseErrors'],
+      permissiveResponses: json['permissiveResponses'],
+      intelligenceModelFlag: json['intelligenceModelFlag'],
+      userAgentTags: List<String>.from(json['userAgentTags']),
+      proxy: json['proxy'],
+    );
+  }
+}
+
+// MARK: - Wildfire
+class WildfireMerchantStruct {
+  int id;
+  String name;
+  double score;
+  String url;
+  String domain;
+  String? logo;
+  String? logoRect;
+  String? logoTransparent;
+  String? logoFeatured;
+  String maxRateKind;
+  String maxRateAmount;
+  String? maxRateCurrency;
+
+  WildfireMerchantStruct({
+    required this.id,
+    required this.name,
+    required this.score,
+    required this.url,
+    required this.domain,
+    this.logo,
+    this.logoRect,
+    this.logoTransparent,
+    this.logoFeatured,
+    required this.maxRateKind,
+    required this.maxRateAmount,
+    this.maxRateCurrency,
+  });
+
+  Map<String, dynamic> toJson() {
+    return {
+      'id': id,
+      'name': name,
+      'score': score,
+      'url': url,
+      'domain': domain,
+      'logo': logo,
+      'logoRect': logoRect,
+      'logoTransparent': logoTransparent,
+      'logoFeatured': logoFeatured,
+      'maxRateKind': maxRateKind,
+      'maxRateAmount': maxRateAmount,
+      'maxRateCurrency': maxRateCurrency,
+    };
+  }
+
+  factory WildfireMerchantStruct.fromJson(Map<String, dynamic> json) {
+    return WildfireMerchantStruct(
+      id: json['id'],
+      name: json['name'],
+      score: json['score'],
+      url: json['url'],
+      domain: json['domain'],
+      logo: json['logo'],
+      logoRect: json['logoRect'],
+      logoTransparent: json['logoTransparent'],
+      logoFeatured: json['logoFeatured'],
+      maxRateKind: json['maxRateKind'],
+      maxRateAmount: json['maxRateAmount'],
+      maxRateCurrency: json['maxRateCurrency'],
+    );
+  }
+}
+
+class WildfireCouponStruct {
+  int id;
+  int merchantId;
+  String description;
+  String exclusions;
+  String code;
+
+  WildfireCouponStruct({
+    required this.id,
+    required this.merchantId,
+    required this.description,
+    required this.exclusions,
+    required this.code,
+  });
+
+  Map<String, dynamic> toJson() {
+    return {
+      'id': id,
+      'merchantId': merchantId,
+      'description': description,
+      'exclusions': exclusions,
+      'code': code,
+    };
+  }
+
+  factory WildfireCouponStruct.fromJson(Map<String, dynamic> json) {
+    return WildfireCouponStruct(
+      id: json['id'],
+      merchantId: json['merchantId'],
+      description: json['description'],
+      exclusions: json['exclusions'],
+      code: json['code'],
+    );
+  }
+}
+
 // MARK: - Receipt
 class ReceiptFlightStruct {
   String? number;
@@ -328,23 +518,14 @@ class ReceiptFeeStruct {
   String? price;
   String? name;
 
-  ReceiptFeeStruct({
-    this.price,
-    this.name,
-  });
+  ReceiptFeeStruct({this.price, this.name});
 
   Map<String, dynamic> toJson() {
-    return {
-      'price': price,
-      'name': name,
-    };
+    return {'price': price, 'name': name};
   }
 
   factory ReceiptFeeStruct.fromJson(Map<String, dynamic> json) {
-    return ReceiptFeeStruct(
-      price: json['price'],
-      name: json['name'],
-    );
+    return ReceiptFeeStruct(price: json['price'], name: json['name']);
   }
 }
 
@@ -578,14 +759,15 @@ class ReceiptItemStruct {
       itemOptions: json['itemOptions'] == null
           ? null
           : (json['itemOptions'] as List<dynamic>)
-              .map((v) => ReceiptItemOptionStruct.fromJson(v))
-              .toList(),
+                .map((v) => ReceiptItemOptionStruct.fromJson(v))
+                .toList(),
     );
   }
 }
 
 class ReceiptStruct {
   int? roverMerchantId;
+  int? roverMerchantVersion;
   String? roverUserId;
   String? roverAccountId;
   String? roverSessionUUID;
@@ -615,7 +797,10 @@ class ReceiptStruct {
   String? total;
   String? totalWithoutTax;
   String? deliveryCharge;
+  String? deliveryDistance;
+  String? deliveryDuration;
   String? discounts;
+  String? credits;
   String? giftCards;
   String? tip;
   String? currency;
@@ -623,6 +808,8 @@ class ReceiptStruct {
   String? paymentChannel;
   ReceiptAddressStruct? shippingAddress;
   ReceiptAddressStruct? merchantAddress;
+  String? merchantStoreId;
+  String? merchantLocationType;
   ReceiptAddressStruct? billingAddress;
   List<ReceiptItemStruct> items;
   String? sourceData;
@@ -642,9 +829,12 @@ class ReceiptStruct {
   List<ReceiptTrainStruct>? travelTrains;
   List<ReceiptBusStruct>? travelBuses;
   ReceiptStreamingVideoStruct? streamingVideo;
+  ReceiptAIConversationStruct? aiConversation;
+  ReceiptAdvertisementStruct? advertisement;
 
   ReceiptStruct({
     this.roverMerchantId,
+    this.roverMerchantVersion,
     this.roverUserId,
     this.roverAccountId,
     this.roverSessionUUID,
@@ -674,7 +864,10 @@ class ReceiptStruct {
     this.total,
     this.totalWithoutTax,
     this.deliveryCharge,
+    this.deliveryDistance,
+    this.deliveryDuration,
     this.discounts,
+    this.credits,
     this.giftCards,
     this.tip,
     this.currency,
@@ -682,6 +875,8 @@ class ReceiptStruct {
     this.paymentChannel,
     this.shippingAddress,
     this.merchantAddress,
+    this.merchantStoreId,
+    this.merchantLocationType,
     this.billingAddress,
     required this.items,
     this.sourceData,
@@ -701,11 +896,14 @@ class ReceiptStruct {
     this.travelTrains,
     this.travelBuses,
     this.streamingVideo,
+    this.aiConversation,
+    this.advertisement,
   });
 
   Map<String, dynamic> toJson() {
     return {
       'roverMerchantId': roverMerchantId,
+      'roverMerchantVersion': roverMerchantVersion,
       'roverUserId': roverUserId,
       'roverAccountId': roverAccountId,
       'roverSessionUUID': roverSessionUUID,
@@ -735,7 +933,10 @@ class ReceiptStruct {
       'total': total,
       'totalWithoutTax': totalWithoutTax,
       'deliveryCharge': deliveryCharge,
+      'deliveryDistance': deliveryDistance,
+      'deliveryDuration': deliveryDuration,
       'discounts': discounts,
+      'credits': credits,
       'giftCards': giftCards,
       'tip': tip,
       'currency': currency,
@@ -743,6 +944,8 @@ class ReceiptStruct {
       'paymentChannel': paymentChannel,
       'shippingAddress': shippingAddress,
       'merchantAddress': merchantAddress,
+      'merchantStoreId': merchantStoreId,
+      'merchantLocationType': merchantLocationType,
       'billingAddress': billingAddress,
       'items': items,
       'sourceData': sourceData,
@@ -762,12 +965,15 @@ class ReceiptStruct {
       'travelTrains': travelTrains,
       'travelBuses': travelBuses,
       'streamingVideo': streamingVideo,
+      'aiConversation': aiConversation,
+      'advertisement': advertisement,
     };
   }
 
   factory ReceiptStruct.fromJson(Map<String, dynamic> json) {
     return ReceiptStruct(
       roverMerchantId: json['roverMerchantId'],
+      roverMerchantVersion: json['roverMerchantVersion'],
       roverUserId: json['roverUserId'],
       roverAccountId: json['roverAccountId'],
       roverSessionUUID: json['roverSessionUUID'],
@@ -795,13 +1001,16 @@ class ReceiptStruct {
       fees: json['fees'] == null
           ? null
           : (json['fees'] as List<dynamic>)
-              .map((v) => ReceiptFeeStruct.fromJson(v))
-              .toList(),
+                .map((v) => ReceiptFeeStruct.fromJson(v))
+                .toList(),
       tax: json['tax'],
       total: json['total'],
       totalWithoutTax: json['totalWithoutTax'],
       deliveryCharge: json['deliveryCharge'],
+      deliveryDistance: json['deliveryDistance'],
+      deliveryDuration: json['deliveryDuration'],
       discounts: json['discounts'],
+      credits: json['credits'],
       giftCards: json['giftCards'],
       tip: json['tip'],
       currency: json['currency'],
@@ -813,6 +1022,8 @@ class ReceiptStruct {
       merchantAddress: json['merchantAddress'] == null
           ? null
           : ReceiptAddressStruct.fromJson(json['merchantAddress']),
+      merchantStoreId: json['merchantStoreId'],
+      merchantLocationType: json['merchantLocationType'],
       billingAddress: json['billingAddress'] == null
           ? null
           : ReceiptAddressStruct.fromJson(json['billingAddress']),
@@ -835,31 +1046,37 @@ class ReceiptStruct {
       travelFlights: json['travelFlights'] == null
           ? null
           : (json['travelFlights'] as List<dynamic>)
-              .map((v) => ReceiptFlightStruct.fromJson(v))
-              .toList(),
+                .map((v) => ReceiptFlightStruct.fromJson(v))
+                .toList(),
       travelAccomodations: json['travelAccomodations'] == null
           ? null
           : (json['travelAccomodations'] as List<dynamic>)
-              .map((v) => ReceiptAccomodationStruct.fromJson(v))
-              .toList(),
+                .map((v) => ReceiptAccomodationStruct.fromJson(v))
+                .toList(),
       travelCarRentals: json['travelCarRentals'] == null
           ? null
           : (json['travelCarRentals'] as List<dynamic>)
-              .map((v) => ReceiptCarRentalStruct.fromJson(v))
-              .toList(),
+                .map((v) => ReceiptCarRentalStruct.fromJson(v))
+                .toList(),
       travelTrains: json['travelTrains'] == null
           ? null
           : (json['travelTrains'] as List<dynamic>)
-              .map((v) => ReceiptTrainStruct.fromJson(v))
-              .toList(),
+                .map((v) => ReceiptTrainStruct.fromJson(v))
+                .toList(),
       travelBuses: json['travelBuses'] == null
           ? null
           : (json['travelBuses'] as List<dynamic>)
-              .map((v) => ReceiptBusStruct.fromJson(v))
-              .toList(),
+                .map((v) => ReceiptBusStruct.fromJson(v))
+                .toList(),
       streamingVideo: json['streamingVideo'] == null
           ? null
           : ReceiptStreamingVideoStruct.fromJson(json['streamingVideo']),
+      aiConversation: json['aiConversation'] == null
+          ? null
+          : ReceiptAIConversationStruct.fromJson(json['aiConversation']),
+      advertisement: json['advertisement'] == null
+          ? null
+          : ReceiptAdvertisementStruct.fromJson(json['advertisement']),
     );
   }
 }
@@ -896,7 +1113,8 @@ class ReceiptStreamingVideoProfileStruct {
   }
 
   factory ReceiptStreamingVideoProfileStruct.fromJson(
-      Map<String, dynamic> json) {
+    Map<String, dynamic> json,
+  ) {
     return ReceiptStreamingVideoProfileStruct(
       id: json['id'],
       name: json['name'],
@@ -909,38 +1127,11 @@ class ReceiptStreamingVideoProfileStruct {
   }
 }
 
-class ReceiptStreamingVideoExtraValueStruct {
-  String? service;
-  String? key;
-  String? value;
-
-  ReceiptStreamingVideoExtraValueStruct({
-    this.service,
-    this.key,
-    this.value,
-  });
-
-  Map<String, dynamic> toJson() {
-    return {
-      'service': service,
-      'key': key,
-      'value': value,
-    };
-  }
-
-  factory ReceiptStreamingVideoExtraValueStruct.fromJson(
-      Map<String, dynamic> json) {
-    return ReceiptStreamingVideoExtraValueStruct(
-      service: json['service'],
-      key: json['key'],
-      value: json['value'],
-    );
-  }
-}
-
 class ReceiptStreamingVideoStruct {
+  String? accountId;
+  String? membershipType;
   ReceiptStreamingVideoProfileStruct? profile;
-  List<ReceiptStreamingVideoExtraValueStruct>? extraValues;
+  Map<String, String>? extraValues;
   String? seriesTitle;
   String? seriesAsin;
   String? seriesId;
@@ -959,12 +1150,20 @@ class ReceiptStreamingVideoStruct {
   String? videoDescription;
   String? videoUrl;
   String? videoImage;
+  String? videoEpisodeNumber;
   String? videoLengthSeconds;
   String? videoWatchedSeconds;
   String? viewDate;
+  String? estimatedViewDate;
   String? videoType;
+  String? channelTitle;
+  String? channelUrl;
+  String? originatingDevice;
+  String? estimatedOriginatingDevice;
 
   ReceiptStreamingVideoStruct({
+    this.accountId,
+    this.membershipType,
     this.profile,
     this.extraValues,
     this.seriesTitle,
@@ -985,14 +1184,22 @@ class ReceiptStreamingVideoStruct {
     this.videoDescription,
     this.videoUrl,
     this.videoImage,
+    this.videoEpisodeNumber,
     this.videoLengthSeconds,
     this.videoWatchedSeconds,
     this.viewDate,
+    this.estimatedViewDate,
     this.videoType,
+    this.channelTitle,
+    this.channelUrl,
+    this.originatingDevice,
+    this.estimatedOriginatingDevice,
   });
 
   Map<String, dynamic> toJson() {
     return {
+      'accountId': accountId,
+      'membershipType': membershipType,
       'profile': profile,
       'extraValues': extraValues,
       'seriesTitle': seriesTitle,
@@ -1013,23 +1220,29 @@ class ReceiptStreamingVideoStruct {
       'videoDescription': videoDescription,
       'videoUrl': videoUrl,
       'videoImage': videoImage,
+      'videoEpisodeNumber': videoEpisodeNumber,
       'videoLengthSeconds': videoLengthSeconds,
       'videoWatchedSeconds': videoWatchedSeconds,
       'viewDate': viewDate,
+      'estimatedViewDate': estimatedViewDate,
       'videoType': videoType,
+      'channelTitle': channelTitle,
+      'channelUrl': channelUrl,
+      'originatingDevice': originatingDevice,
+      'estimatedOriginatingDevice': estimatedOriginatingDevice,
     };
   }
 
   factory ReceiptStreamingVideoStruct.fromJson(Map<String, dynamic> json) {
     return ReceiptStreamingVideoStruct(
+      accountId: json['accountId'],
+      membershipType: json['membershipType'],
       profile: json['profile'] == null
           ? null
           : ReceiptStreamingVideoProfileStruct.fromJson(json['profile']),
       extraValues: json['extraValues'] == null
           ? null
-          : (json['extraValues'] as List<dynamic>)
-              .map((v) => ReceiptStreamingVideoExtraValueStruct.fromJson(v))
-              .toList(),
+          : Map<String, String>.from(json['extraValues']),
       seriesTitle: json['seriesTitle'],
       seriesAsin: json['seriesAsin'],
       seriesId: json['seriesId'],
@@ -1048,10 +1261,423 @@ class ReceiptStreamingVideoStruct {
       videoDescription: json['videoDescription'],
       videoUrl: json['videoUrl'],
       videoImage: json['videoImage'],
+      videoEpisodeNumber: json['videoEpisodeNumber'],
       videoLengthSeconds: json['videoLengthSeconds'],
       videoWatchedSeconds: json['videoWatchedSeconds'],
       viewDate: json['viewDate'],
+      estimatedViewDate: json['estimatedViewDate'],
       videoType: json['videoType'],
+      channelTitle: json['channelTitle'],
+      channelUrl: json['channelUrl'],
+      originatingDevice: json['originatingDevice'],
+      estimatedOriginatingDevice: json['estimatedOriginatingDevice'],
+    );
+  }
+}
+
+class ReceiptAIConversationMessagePartStruct {
+  String? imageId;
+  String? imageWidth;
+  String? imageHeight;
+  String? imageGenerator;
+  String? text;
+  String? context0;
+  String? context1;
+  String? context2;
+
+  ReceiptAIConversationMessagePartStruct({
+    this.imageId,
+    this.imageWidth,
+    this.imageHeight,
+    this.imageGenerator,
+    this.text,
+    this.context0,
+    this.context1,
+    this.context2,
+  });
+
+  Map<String, dynamic> toJson() {
+    return {
+      'imageId': imageId,
+      'imageWidth': imageWidth,
+      'imageHeight': imageHeight,
+      'imageGenerator': imageGenerator,
+      'text': text,
+      'context0': context0,
+      'context1': context1,
+      'context2': context2,
+    };
+  }
+
+  factory ReceiptAIConversationMessagePartStruct.fromJson(
+    Map<String, dynamic> json,
+  ) {
+    return ReceiptAIConversationMessagePartStruct(
+      imageId: json['imageId'],
+      imageWidth: json['imageWidth'],
+      imageHeight: json['imageHeight'],
+      imageGenerator: json['imageGenerator'],
+      text: json['text'],
+      context0: json['context0'],
+      context1: json['context1'],
+      context2: json['context2'],
+    );
+  }
+}
+
+class ReceiptAIConversationSearchResultStruct {
+  String? domain;
+  String? type;
+  String? url;
+  String? title;
+  String? snippet;
+  String? publishedDate;
+  String? attribution;
+
+  ReceiptAIConversationSearchResultStruct({
+    this.domain,
+    this.type,
+    this.url,
+    this.title,
+    this.snippet,
+    this.publishedDate,
+    this.attribution,
+  });
+
+  Map<String, dynamic> toJson() {
+    return {
+      'domain': domain,
+      'type': type,
+      'url': url,
+      'title': title,
+      'snippet': snippet,
+      'publishedDate': publishedDate,
+      'attribution': attribution,
+    };
+  }
+
+  factory ReceiptAIConversationSearchResultStruct.fromJson(
+    Map<String, dynamic> json,
+  ) {
+    return ReceiptAIConversationSearchResultStruct(
+      domain: json['domain'],
+      type: json['type'],
+      url: json['url'],
+      title: json['title'],
+      snippet: json['snippet'],
+      publishedDate: json['publishedDate'],
+      attribution: json['attribution'],
+    );
+  }
+}
+
+class ReceiptAIConversationContentReferenceStruct {
+  String? replaceText;
+  String? altText;
+  String? type;
+  ReceiptAIConversationSearchResultStruct? website;
+
+  ReceiptAIConversationContentReferenceStruct({
+    this.replaceText,
+    this.altText,
+    this.type,
+    this.website,
+  });
+
+  Map<String, dynamic> toJson() {
+    return {
+      'replaceText': replaceText,
+      'altText': altText,
+      'type': type,
+      'website': website,
+    };
+  }
+
+  factory ReceiptAIConversationContentReferenceStruct.fromJson(
+    Map<String, dynamic> json,
+  ) {
+    return ReceiptAIConversationContentReferenceStruct(
+      replaceText: json['replaceText'],
+      altText: json['altText'],
+      type: json['type'],
+      website: json['website'] == null
+          ? null
+          : ReceiptAIConversationSearchResultStruct.fromJson(json['website']),
+    );
+  }
+}
+
+class ReceiptAIConversationAttachmentStruct {
+  String? imageId;
+  String? imageWidth;
+  String? imageHeight;
+  String? imageType;
+  String? imageName;
+
+  ReceiptAIConversationAttachmentStruct({
+    this.imageId,
+    this.imageWidth,
+    this.imageHeight,
+    this.imageType,
+    this.imageName,
+  });
+
+  Map<String, dynamic> toJson() {
+    return {
+      'imageId': imageId,
+      'imageWidth': imageWidth,
+      'imageHeight': imageHeight,
+      'imageType': imageType,
+      'imageName': imageName,
+    };
+  }
+
+  factory ReceiptAIConversationAttachmentStruct.fromJson(
+    Map<String, dynamic> json,
+  ) {
+    return ReceiptAIConversationAttachmentStruct(
+      imageId: json['imageId'],
+      imageWidth: json['imageWidth'],
+      imageHeight: json['imageHeight'],
+      imageType: json['imageType'],
+      imageName: json['imageName'],
+    );
+  }
+}
+
+class ReceiptAIConversationMessageStruct {
+  String? continuousSessionUUID;
+  String? messageId;
+  String? author;
+  String? createdDate;
+  String? updatedDate;
+  String? contentType;
+  List<ReceiptAIConversationMessagePartStruct>? messageParts;
+  List<ReceiptAIConversationAttachmentStruct>? attachments;
+  List<ReceiptAIConversationContentReferenceStruct>? contentReferences;
+  List<ReceiptAIConversationSearchResultStruct>? searchResults;
+  String? model;
+  String? codeLanguage;
+  String? codeText;
+  String? visibility;
+
+  ReceiptAIConversationMessageStruct({
+    this.continuousSessionUUID,
+    this.messageId,
+    this.author,
+    this.createdDate,
+    this.updatedDate,
+    this.contentType,
+    this.messageParts,
+    this.attachments,
+    this.contentReferences,
+    this.searchResults,
+    this.model,
+    this.codeLanguage,
+    this.codeText,
+    this.visibility,
+  });
+
+  Map<String, dynamic> toJson() {
+    return {
+      'continuousSessionUUID': continuousSessionUUID,
+      'messageId': messageId,
+      'author': author,
+      'createdDate': createdDate,
+      'updatedDate': updatedDate,
+      'contentType': contentType,
+      'messageParts': messageParts,
+      'attachments': attachments,
+      'contentReferences': contentReferences,
+      'searchResults': searchResults,
+      'model': model,
+      'codeLanguage': codeLanguage,
+      'codeText': codeText,
+      'visibility': visibility,
+    };
+  }
+
+  factory ReceiptAIConversationMessageStruct.fromJson(
+    Map<String, dynamic> json,
+  ) {
+    return ReceiptAIConversationMessageStruct(
+      continuousSessionUUID: json['continuousSessionUUID'],
+      messageId: json['messageId'],
+      author: json['author'],
+      createdDate: json['createdDate'],
+      updatedDate: json['updatedDate'],
+      contentType: json['contentType'],
+      messageParts: json['messageParts'] == null
+          ? null
+          : (json['messageParts'] as List<dynamic>)
+                .map((v) => ReceiptAIConversationMessagePartStruct.fromJson(v))
+                .toList(),
+      attachments: json['attachments'] == null
+          ? null
+          : (json['attachments'] as List<dynamic>)
+                .map((v) => ReceiptAIConversationAttachmentStruct.fromJson(v))
+                .toList(),
+      contentReferences: json['contentReferences'] == null
+          ? null
+          : (json['contentReferences'] as List<dynamic>)
+                .map(
+                  (v) =>
+                      ReceiptAIConversationContentReferenceStruct.fromJson(v),
+                )
+                .toList(),
+      searchResults: json['searchResults'] == null
+          ? null
+          : (json['searchResults'] as List<dynamic>)
+                .map((v) => ReceiptAIConversationSearchResultStruct.fromJson(v))
+                .toList(),
+      model: json['model'],
+      codeLanguage: json['codeLanguage'],
+      codeText: json['codeText'],
+      visibility: json['visibility'],
+    );
+  }
+}
+
+class ReceiptAIConversationStruct {
+  String? userId;
+  String? userName;
+  String? userEmail;
+  String? userCreatedDate;
+  String? conversationId;
+  String? title;
+  String? createdDate;
+  String? updatedDate;
+  String? groupId;
+  String? groupType;
+  String? groupTitle;
+  List<ReceiptAIConversationMessageStruct>? messages;
+
+  ReceiptAIConversationStruct({
+    this.userId,
+    this.userName,
+    this.userEmail,
+    this.userCreatedDate,
+    this.conversationId,
+    this.title,
+    this.createdDate,
+    this.updatedDate,
+    this.groupId,
+    this.groupType,
+    this.groupTitle,
+    this.messages,
+  });
+
+  Map<String, dynamic> toJson() {
+    return {
+      'userId': userId,
+      'userName': userName,
+      'userEmail': userEmail,
+      'userCreatedDate': userCreatedDate,
+      'conversationId': conversationId,
+      'title': title,
+      'createdDate': createdDate,
+      'updatedDate': updatedDate,
+      'groupId': groupId,
+      'groupType': groupType,
+      'groupTitle': groupTitle,
+      'messages': messages,
+    };
+  }
+
+  factory ReceiptAIConversationStruct.fromJson(Map<String, dynamic> json) {
+    return ReceiptAIConversationStruct(
+      userId: json['userId'],
+      userName: json['userName'],
+      userEmail: json['userEmail'],
+      userCreatedDate: json['userCreatedDate'],
+      conversationId: json['conversationId'],
+      title: json['title'],
+      createdDate: json['createdDate'],
+      updatedDate: json['updatedDate'],
+      groupId: json['groupId'],
+      groupType: json['groupType'],
+      groupTitle: json['groupTitle'],
+      messages: json['messages'] == null
+          ? null
+          : (json['messages'] as List<dynamic>)
+                .map((v) => ReceiptAIConversationMessageStruct.fromJson(v))
+                .toList(),
+    );
+  }
+}
+
+class ReceiptAdvertisementStruct {
+  String? id;
+  String? date;
+  String? type;
+  String? title;
+  String? description;
+  String? brand;
+  String? brandUrl;
+  String? brandId;
+  String? image;
+  String? url;
+  String? action;
+  String? associatedContentType;
+  String? associatedContentId;
+  String? originatingDevice;
+  String? estimatedOriginatingDevice;
+
+  ReceiptAdvertisementStruct({
+    this.id,
+    this.date,
+    this.type,
+    this.title,
+    this.description,
+    this.brand,
+    this.brandUrl,
+    this.brandId,
+    this.image,
+    this.url,
+    this.action,
+    this.associatedContentType,
+    this.associatedContentId,
+    this.originatingDevice,
+    this.estimatedOriginatingDevice,
+  });
+
+  Map<String, dynamic> toJson() {
+    return {
+      'id': id,
+      'date': date,
+      'type': type,
+      'title': title,
+      'description': description,
+      'brand': brand,
+      'brandUrl': brandUrl,
+      'brandId': brandId,
+      'image': image,
+      'url': url,
+      'action': action,
+      'associatedContentType': associatedContentType,
+      'associatedContentId': associatedContentId,
+      'originatingDevice': originatingDevice,
+      'estimatedOriginatingDevice': estimatedOriginatingDevice,
+    };
+  }
+
+  factory ReceiptAdvertisementStruct.fromJson(Map<String, dynamic> json) {
+    return ReceiptAdvertisementStruct(
+      id: json['id'],
+      date: json['date'],
+      type: json['type'],
+      title: json['title'],
+      description: json['description'],
+      brand: json['brand'],
+      brandUrl: json['brandUrl'],
+      brandId: json['brandId'],
+      image: json['image'],
+      url: json['url'],
+      action: json['action'],
+      associatedContentType: json['associatedContentType'],
+      associatedContentId: json['associatedContentId'],
+      originatingDevice: json['originatingDevice'],
+      estimatedOriginatingDevice: json['estimatedOriginatingDevice'],
     );
   }
 }
